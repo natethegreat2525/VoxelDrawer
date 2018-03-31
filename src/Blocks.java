@@ -22,7 +22,8 @@ public class Blocks {
 		//grass
 		BlockContainer.blockTypes[6] = new UniformBlock(15, 4, 4, new Vector4f(0, .15f, .01f, 1));
 
-		
+		BlockContainer.blockTypes[7] = new WaterBlock(15, 4, 4, new Vector4f(.05f, .3f, 1, .7f));
+
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				for (int k = 0; k < 4; k++) {

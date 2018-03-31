@@ -29,6 +29,7 @@ public class PlayerFly extends PlayerEntity {
 		
 		super.player.setVelocityY(0);
 		super.player.setPositionY(sety);
+//		super.player.setPositionX(super.player.getPosition().x + delta / 2);
 		super.update(s, delta);
 
 	}
