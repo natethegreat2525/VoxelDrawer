@@ -1,7 +1,7 @@
 import org.lwjgl.glfw.GLFW;
 
 import com.nshirley.engine3d.entities.Camera3d;
-import com.nshirley.engine3d.entities.Entity;
+import com.nshirley.engine3d.entities.Mesh;
 import com.nshirley.engine3d.math.Matrix4f;
 import com.nshirley.engine3d.math.Vector3f;
 import com.nshirley.engine3d.math.Vector3i;
@@ -18,14 +18,14 @@ import world.Raycast;
 
 public class PlayerColorSelect extends PlayerFly {
 
-	public Entity cube;
+	public Mesh cube;
 	public int selected = 0;
 	public int offsetX;
 	public Vector3i buildSize;
 	public boolean middleMouse;
 	public Vector3i mmStart;
 	
-	public PlayerColorSelect(Entity box, Vector3f pos, Vector3f size, Camera3d cam, Vector3i buildSize, int offsetX) {
+	public PlayerColorSelect(Mesh box, Vector3f pos, Vector3f size, Camera3d cam, Vector3i buildSize, int offsetX) {
 		super(box, pos, size, cam);
 		this.cube = box;
 		this.buildSize = buildSize;

@@ -1,7 +1,7 @@
 import org.lwjgl.glfw.GLFW;
 
 import com.nshirley.engine3d.entities.Camera3d;
-import com.nshirley.engine3d.entities.Entity;
+import com.nshirley.engine3d.entities.Mesh;
 import com.nshirley.engine3d.math.Vector3f;
 import com.nshirley.engine3d.window.Input;
 import com.nshirley.engine3d.window.MouseButton;
@@ -13,7 +13,7 @@ import world.Raycast;
 public class PlayerFly extends PlayerEntity {
 
 	public float sety = 5;
-	public PlayerFly(Entity box, Vector3f pos, Vector3f size, Camera3d cam) {
+	public PlayerFly(Mesh box, Vector3f pos, Vector3f size, Camera3d cam) {
 		super(box, pos, size, cam);
 	}
 	

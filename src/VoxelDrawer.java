@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nshirley.engine3d.N3D;
 import com.nshirley.engine3d.entities.Camera3d;
-import com.nshirley.engine3d.entities.Entity;
+import com.nshirley.engine3d.entities.Mesh;
 import com.nshirley.engine3d.entities.shapes.Shape;
 import com.nshirley.engine3d.graphics.Texture;
 import com.nshirley.engine3d.math.Matrix4f;
@@ -66,7 +66,7 @@ public class VoxelDrawer {
 	
 	public static ChunkViewport cv;
 	
-	public static Entity preview = null;
+	public static Mesh preview = null;
 	
 	public static ArrayList<VoxelData> versions = new ArrayList<VoxelData>();
 	
@@ -286,7 +286,7 @@ public class VoxelDrawer {
 				.1f, 1000);
 		Matrix4f ortho = Matrix4f.orthographic(0, WIDTH, 0, HEIGHT, -HEIGHT, HEIGHT);
 		
-		Entity box = new Entity(Shape.cube(), blank);
+		Mesh box = new Mesh(Shape.cube(), blank);
 
 		World world = new World(new FlatPlane());
 		cv = new ChunkViewport(new Vector3i(), new Vector3i(10, 3, 10), world, tx);		
