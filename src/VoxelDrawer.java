@@ -50,6 +50,9 @@ import engine.PlayerEntity;
 import engine.Simulator;
 import physics.PhysSim;
 import physics.Rect;
+import voxels.VoxelData;
+import voxels.VoxelDrawBuilder;
+
 import org.lwjgl.stb.STBEasyFont;
 import java.awt.*;
 import java.io.File;
@@ -63,18 +66,25 @@ public class VoxelDrawer {
 	
 	public static ChunkViewport cv;
 	
+	public static Entity preview = null;
+	
 	public static ArrayList<VoxelData> versions = new ArrayList<VoxelData>();
+	
+	public static Texture tx;
 	
 	public static void pushNewVersion(World world) {
 		int[] data = new int[sX * sY * sZ];
 		for (int i = 0; i < sX; i++) {
 			for (int j = 0; j < sY; j++) {
 				for (int k = 0; k < sZ; k++) {
-					data[i + j*sX + k*sX*sY] = world.getBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1)) - 100;
+					data[i + j*sX + k*sX*sY] = world.getBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1));
 				}
 			}
 		}
 		VoxelData vd = new VoxelData(new Vector3i(sX, sY, sZ), data);
+		if (preview != null)
+			preview.free();
+		preview = VoxelDrawBuilder.generateChunkEntity(vd, tx);
 		versions.add(vd);
 	}
 	
@@ -88,10 +98,13 @@ public class VoxelDrawer {
 		for (int i = 0; i < sX; i++) {
 			for (int j = 0; j < sY; j++) {
 				for (int k = 0; k < sZ; k++) {
-					bbu.setBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1),(short) (vd.data[i + j*sX + k*sX*sY] + 100));
+					bbu.setBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1),(short) (vd.data[i + j*sX + k*sX*sY]));
 				}
 			}
 		}
+		if (preview != null)
+			preview.free();
+		preview = VoxelDrawBuilder.generateChunkEntity(vd, tx);
 		world.bulkUpdate(bbu);
 	}
 	
@@ -186,7 +199,7 @@ public class VoxelDrawer {
 			for (int i = 0; i < sX; i++) {
 				for (int j = 0; j < sY; j++) {
 					for (int k = 0; k < sZ; k++) {
-						data[i + j*sX + k*sX*sY] = world.getBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1)) - 100;
+						data[i + j*sX + k*sX*sY] = world.getBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1));
 					}
 				}
 			}
@@ -194,7 +207,11 @@ public class VoxelDrawer {
 			GsonBuilder builder = new GsonBuilder();
 			Gson gson = builder.create();
 			try {
-				Files.write(Paths.get(file.getPath() + ".vox"), gson.toJson(vd).getBytes());
+				String path = file.getPath();
+				if (!path.endsWith(".vox")) {
+					path += ".vox";
+				}
+				Files.write(Paths.get(path), gson.toJson(vd).getBytes());
 			} catch (IOException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, "File was not saved!\n" + e.getStackTrace(), "File Save Error", JOptionPane.ERROR_MESSAGE, null);
@@ -215,7 +232,9 @@ public class VoxelDrawer {
 				GsonBuilder builder = new GsonBuilder();
 				Gson gson = builder.create();
 				VoxelData vd = gson.fromJson(json, VoxelData.class);
-				
+				if (preview != null)
+					preview.free();
+				preview = VoxelDrawBuilder.generateChunkEntity(vd, tx);
 				sX = vd.size.x;
 				sY = vd.size.y;
 				sZ = vd.size.z;
@@ -225,10 +244,15 @@ public class VoxelDrawer {
 				
 				initBlocks(world);
 				BulkBlockUpdate bbu = new BulkBlockUpdate();
+				int offs = 0;
 				for (int i = 0; i < sX; i++) {
 					for (int j = 0; j < sY; j++) {
 						for (int k = 0; k < sZ; k++) {
-							bbu.setBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1),(short) (vd.data[i + j*sX + k*sX*sY] + 100));
+							int val = vd.data[i + j*sX + k*sX*sY];
+							if (val < 0) {
+								offs = 100;
+							}
+							bbu.setBlockValue(new Vector3i(i + offsetX + 1, j + 1, k + 1),(short) (val + offs));
 						}
 					}
 				}
@@ -245,6 +269,7 @@ public class VoxelDrawer {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
+		System.out.println("Starting");
 		showOptions();
 		Window win = new Window(WIDTH, HEIGHT, "Voxel Drawer");
 		win.setCursorMode(GLFW.GLFW_CURSOR_DISABLED);
@@ -252,7 +277,7 @@ public class VoxelDrawer {
 		ChunkEntity.loadShader();
 		FadeEntity.loadShader();
 
-		Texture tx = new Texture(VoxelDrawer.class.getClassLoader().getResourceAsStream("blocks_a.png"));
+		tx = new Texture(VoxelDrawer.class.getClassLoader().getResourceAsStream("blocks_a.png"));
 		Texture blank = new Texture(VoxelDrawer.class.getClassLoader().getResourceAsStream("blank.png"));
 		
 		Blocks.init();
@@ -264,7 +289,7 @@ public class VoxelDrawer {
 		Entity box = new Entity(Shape.cube(), blank);
 
 		World world = new World(new FlatPlane());
-		cv = new ChunkViewport(new Vector3i(), new Vector3i(15, 3, 15), world, tx);		
+		cv = new ChunkViewport(new Vector3i(), new Vector3i(10, 3, 10), world, tx);		
 		Simulator sim = new Simulator(world, cv, new Vector3f(0, 0, 0), box);
 		
 		
@@ -280,16 +305,7 @@ public class VoxelDrawer {
 		
 		while (!win.shouldClose()) {
 			player.buildSize = new Vector3i(sX, sY, sZ);
-			long newDelta = System.currentTimeMillis();
-			delta = (newDelta - deltaTime) / (1000 / 60.0f);
-			long diff = newDelta - deltaTime;
-
-			deltaTime = newDelta;
-			delta = Math.min(delta, 4);
 			
-			if (diff < 10) {
-				Thread.sleep(10 - diff);
-			}
 			
 
 			win.clear();
@@ -311,7 +327,25 @@ public class VoxelDrawer {
 			}
 			
 			sim.render(c.getPosition(), c.getLookDir());
-
+			if (preview != null) {
+				preview.setModelMatrix(
+						Matrix4f.translate(new Vector3f(2.5f, 2f, -2.5f)).multiply(
+								Matrix4f.scale(new Vector3f(.125f, .125f, .125f)).multiply(
+										Matrix4f.rotateY((System.currentTimeMillis() % 36000) / 100.0f).multiply(
+												Matrix4f.translate(new Vector3f(-sX/2, -sY/2, -sZ/2))
+												))));
+				preview.render();
+				preview.setModelMatrix(
+						Matrix4f.translate(new Vector3f(2.5f, 2f, -4.5f)).multiply(
+								Matrix4f.scale(new Vector3f(.125f, .125f, .125f)).multiply(
+										Matrix4f.rotateY((System.currentTimeMillis() % 3600000) / 100.0f).multiply(
+												Matrix4f.rotateX((System.currentTimeMillis() % 3600000) / 200.0f).multiply(
+														Matrix4f.rotateZ((System.currentTimeMillis() % 3600000) / 50.0f).multiply(
+																Matrix4f.translate(new Vector3f(-sX/2, -sY/2, -sZ/2))
+												))))));
+				preview.render();
+			}
+			
 			N3D.popMatrix();
 			N3D.pushMatrix();
 			N3D.multMatrix(ortho);
@@ -325,6 +359,17 @@ public class VoxelDrawer {
 				System.out.println(i);
 			}
 			
+			long newDelta = System.currentTimeMillis();
+			long diff = (newDelta - deltaTime);
+			if (diff < 30) {
+				Thread.sleep(32 - diff);
+			}
+			newDelta = System.currentTimeMillis();
+			delta = (newDelta - deltaTime) / (1000 / 60.0f);
+
+			deltaTime = newDelta;
+			delta = Math.min(delta, 4);
+						
 			win.flip();
 			if (Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE))
 				break;

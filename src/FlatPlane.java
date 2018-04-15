@@ -17,7 +17,7 @@ public class FlatPlane implements ChunkBuilder {
 		for (int i = 0; i < Chunk.SIZE; i++) {
 			for (int j = 0; j < Chunk.SIZE; j++) {
 				double y = (pos.y * Chunk.SIZE + j);
-				if (y > 32) {
+				if (y > 62) {
 					continue;
 				}
 				
@@ -28,8 +28,8 @@ public class FlatPlane implements ChunkBuilder {
 					double dx = x - 14;
 					double dz = z;
 					double dist = Math.sqrt(dx * dx + dz * dz)/5;
-					dist = Math.min(dist, 100/5.0);
-					double sn = s.noise(x / 64.0, y / 64.0, z / 64.0);
+					dist = Math.min(dist, 200/5.0);
+					double sn = s.noise(x / 64.0, y / (64.0 + dist * 64.0 / 20.0), z / 64.0);
 					double n = sn - y / dist;
 					if (x >= 0 && x <= 24 && z >= -3 && z <= 20) {
 						n = (y > 0) ? -1 : 1;
