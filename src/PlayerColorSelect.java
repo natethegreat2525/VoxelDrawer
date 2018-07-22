@@ -41,7 +41,7 @@ public class PlayerColorSelect extends PlayerFly {
 	@Override
 	public void update(Simulator s, float delta) {
 		super.update(s, delta);
-		selected = (int) ((MouseWheel.Y + 64000) % 64);
+		selected = (int) ((MouseWheel.Y + 64000) % 512);
 		
 		
 		if (MouseButton.mouseDown(2)) {
@@ -122,12 +122,13 @@ public class PlayerColorSelect extends PlayerFly {
 			Raycast rc = s.world.raycast(this.headPos.clone(), this.cam.getLookDir().clone(), 40);
 			if (rc != null) {
 				MouseWheel.Y = s.world.getBlockValue(rc.blockPosition) - 100; 
+				System.out.println(MouseWheel.Y + 100);
 			}
 		}
 	}
 	
-	public void render(int pass) {
-		super.render(pass);
+	public void render(Vector3f pos, Vector3f dir, int pass) {
+		super.render(pos, dir, pass);
 		if (pass == 1) {
 			cube.setColor(((UniformBlock) BlockContainer.getBlockType((short) (selected + 100))).getColor());
 			cube.setModelMatrix(

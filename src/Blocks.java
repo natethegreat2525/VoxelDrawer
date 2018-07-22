@@ -24,10 +24,10 @@ public class Blocks {
 
 		BlockContainer.blockTypes[7] = new WaterBlock(15, 4, 4, new Vector4f(.05f, .3f, 1, .7f));
 
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				for (int k = 0; k < 4; k++) {
-					BlockContainer.blockTypes[100 + (i * 16 + j * 4 + k)] = new UniformBlock(15, 4, 4, new Vector4f(i/3.0f, j/3.0f, k/3.0f, 1));
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				for (int k = 0; k < 8; k++) {
+					BlockContainer.blockTypes[100 + (i * 64 + j * 8 + k)] = new UniformBlock(15, 4, 4, new Vector4f(i/7.0f, j/7.0f, k/7.0f, 1));
 				}
 			}
 		}

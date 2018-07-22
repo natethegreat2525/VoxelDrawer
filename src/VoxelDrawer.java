@@ -48,6 +48,7 @@ import drawentity.ChunkEntity;
 import drawentity.FadeEntity;
 import engine.PlayerEntity;
 import engine.Simulator;
+import engine.StaticEntityManager;
 import physics.PhysSim;
 import physics.Rect;
 import voxels.VoxelData;
@@ -140,12 +141,12 @@ public class VoxelDrawer {
 		BulkBlockUpdate bbu = new BulkBlockUpdate();
 
 		int cnt = 0;
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				for (int k = 0; k < 4; k++) {
-					int x = k;
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				for (int k = 0; k < 8; k++) {
+					int x = k - 3;
 					int y = 0;
-					int z = j + i * 5;
+					int z = j + i * 9 - 32;
 					bbu.setBlockValue(x, y, z, (short) (cnt + 100));
 					cnt++;
 				}
@@ -181,7 +182,7 @@ public class VoxelDrawer {
 		for (int i = 0; i < 200; i ++) {
 			double x = Math.random() * 200 - 100;
 			double z = Math.random() * 200 - 100;
-			if (x > -10 && x < 34 && z > -10 && z < 28) {
+			if (x > -10 && x < 34 && z > -50 && z < 50) {
 				continue;
 			}
 			TreeBuilder.buildTree(new Vector3f((float) x, 20, (float) z), world);
@@ -290,23 +291,21 @@ public class VoxelDrawer {
 
 		World world = new World(new FlatPlane());
 		cv = new ChunkViewport(new Vector3i(), new Vector3i(10, 3, 10), world, tx);		
-		Simulator sim = new Simulator(world, cv, new Vector3f(0, 0, 0), box);
+		Simulator sim = new Simulator(world, cv, new Vector3f(0, 0, 0), box, new StaticEntityManager());
 		
 		
 
 		PlayerColorSelect player = new PlayerColorSelect(box, new Vector3f(0, 0, 0), new Vector3f(.5f, 1.5f, .5f), c, new Vector3i(sX, sY, sZ), offsetX);
-		sim.add(player);
+		sim.em.add(player);
 				
 		long deltaTime = System.currentTimeMillis();
 		float delta = 1;
-		glClearColor(126/255f, 192/255f, 238/255f, 1);
+		glClearColor(0/255f, 170/255f, 228/255f, 1);
 		initBlocks(world);
 		pushNewVersion(world);
 		
 		while (!win.shouldClose()) {
 			player.buildSize = new Vector3i(sX, sY, sZ);
-			
-			
 
 			win.clear();
 			win.pollEvents();

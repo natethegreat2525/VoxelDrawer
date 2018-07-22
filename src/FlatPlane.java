@@ -31,7 +31,7 @@ public class FlatPlane implements ChunkBuilder {
 					dist = Math.min(dist, 200/5.0);
 					double sn = s.noise(x / 64.0, y / (64.0 + dist * 64.0 / 20.0), z / 64.0);
 					double n = sn - y / dist;
-					if (x >= 0 && x <= 24 && z >= -3 && z <= 20) {
+					if (x >= -3 && x <= 24 && z >= -50 && z <= 50) {
 						n = (y > 0) ? -1 : 1;
 					}
 					if (n < 0 && y < -10) {

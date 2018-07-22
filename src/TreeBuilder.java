@@ -22,11 +22,23 @@ public class TreeBuilder {
 		int numLeaves = 3;
 		
 		BulkBlockUpdate bbu = new BulkBlockUpdate();
-		sphere(new Vector3f(pos.x, base, pos.z), new Vector3f(thickness + 1, thickness + 1, thickness + 1), (short) 116
+		sphere(new Vector3f(pos.x, base, pos.z), new Vector3f(thickness + 1, thickness + 1, thickness + 1), (short) 236
 				, bbu);
-		cylinder(new Vector3f(pos.x, base + height / 2, pos.z), new Vector3f(thickness, height / 2, thickness), (short) 116, bbu);
+		cylinder(new Vector3f(pos.x, base + height / 2, pos.z), new Vector3f(thickness, height / 2, thickness), (short) 236, bbu);
 		//colors
-		short[] leafcols = {6, 120, 136, 140};
+		short[] leafcols = {
+				108,
+				116,
+				124,
+				132,
+				140,
+				428,
+				444,
+				431,
+				412,
+				596,
+				556
+				};
 		short col = (short) (leafcols[(int) (Math.random() * leafcols.length)]);
 		for (int i = 0; i < numLeaves; i++) {
 			float ox = (float) Math.random() * 10 - 5;
